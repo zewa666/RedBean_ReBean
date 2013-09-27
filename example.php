@@ -1,73 +1,54 @@
 <?php
-
+// require the one-file-build
 require 'rb.php';
 
+// currently only working for MYSQL so setup your connection here
 R::setup('mysql:host=localhost;dbname=redbeandemo',
          'root','');
 
+// get instance of the revision plugin
+$rebeanPlugin = new RedBean_ReBean();
+
+/*
+ * just for demo purpose to see that each time really everything gets build
+ * don't do this on your DB :)
+ */
 R::nuke();
 
+// Create a new Bean and set some properties
 $user = R::dispense('user');
 $user->prename = "Unknown";
 $user->surname = "User";
 $user->age = 12;
 
+// store it
 R::store($user);
 
-$export = $user->export();
+// now ask the plugin to create revision support for your
+$rebeanPlugin->createRevisionSupport($user);
 
-$duplicate = R::dispense("revision" . $user->getMeta('type'));
-$duplicate->action = "";                               // real enum needed
-$duplicate->import($export);
-$duplicate->lastedit = date('Y-m-d');
-$duplicate->setMeta('cast.action','string');
-$duplicate->setMeta('cast.lastedit','datetime');
-//$duplicate->setMeta('cast.lastedit','timestamp');      // how to cast to timestamp
-//$duplicate->setMeta('lastedit', 'CURRENT_TIMESTAMP');  // aka NOW()
-R::store($duplicate);
-
-// create trigger
-function createOriginalColumnPrefix($prefix) {
-  return function($col) use($prefix) {
-    if($col == "id")
-      return null;
-    return $prefix . $col;
-  };
-};
-
-function filter($val) { return !($val == "id" || $val == null); }
-$revisionColumns = implode(",", array_filter(array_keys($user->getProperties()), "filter"));
-$origColumns = function($prefix) use ($user) {
-  return implode(",",
-    array_filter(
-      array_map(
-        createOriginalColumnPrefix($prefix),
-        array_keys($user->getProperties())
-      ),
-      'filter'
-    )
-  );
-};
-
-var_dump("INSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $revisionColumns . ") VALUES ('insert', NOW(), " . $origColumns('NEW.') . ")");
-
-R::exec("DROP TRIGGER IF EXISTS `trg_" . $user->getMeta('type') . "_AI`;");
-R::exec("CREATE TRIGGER `trg_" . $user->getMeta('type') . "_AI` AFTER INSERT ON `" . $user->getMeta('type') . "` FOR EACH ROW BEGIN
-\tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $revisionColumns . ") VALUES ('insert', NOW(), " . $origColumns('NEW.') . ");
-END;");
-
-R::exec("DROP TRIGGER IF EXISTS `trg_" . $user->getMeta('type') . "_AU`;");
-R::exec("CREATE TRIGGER `trg_" . $user->getMeta('type') . "_AU` AFTER UPDATE ON `" . $user->getMeta('type') . "` FOR EACH ROW BEGIN
-\tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $revisionColumns . ") VALUES ('update', NOW(), " . $origColumns('NEW.') . ");
-END;");
-
-R::exec("DROP TRIGGER IF EXISTS `trg_" . $user->getMeta('type') . "_AD`;");
-R::exec("CREATE TRIGGER `trg_" . $user->getMeta('type') . "_AD` AFTER DELETE ON `" . $user->getMeta('type') . "` FOR EACH ROW BEGIN
-\tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $revisionColumns . ") VALUES ('delete', NOW(), " . $origColumns('OLD.') . ");
-END;");
-
-
-
+/*
+ * some CRUD tests to verify that all changes are tracked in the revision table
+ * also add some sleeps to see difference in logged date
+ */
 $usernew = R::dispense('user');
-$usernew->prename = "Blub";
+$usernew->prename = "Test1";
 R::store($usernew);
+sleep(1);
+$usernew->prename = "Test2";
+R::store($usernew);
+sleep(2);
+R::trash($usernew);
+sleep(1);
+
+// output of the revision table
+$revisions = R::find('revisionuser');
+foreach($revisions as $rev)
+{
+  echo "Action: " . $rev->action . " -> ".
+                    $rev->prename . " "  .
+                    $rev->surname . " "  .
+                    $rev->age            .
+                    " Lastchangedate: "  .
+                    $rev->lastedit . "<br/>";
+}

@@ -1,14 +1,14 @@
-<?php
+<?php 
 /**
 
- _ _      _ _ _       _ _   _ _ _ _
+ _ _      _ _ _       _ _   _ _ _ _  
 |_) _  _||_) _  _ __ |_)|_||_)
 | \(/_(_||_)(/_(_|| ||  | ||_ _
 
 REDBEANPHP 3.5 | easy ORM for PHP | on-the-fly relational mapper
 --------------
 RedBeanPHP Database Objects -
-Written by Gabor de Mooij (c) copyright 2009-2013 and the RedBeanPHP community
+Written by Gabor de Mooij (c) copyright 2009-2013 and the RedBeanPHP community 
 RedBeanPHP is DUAL Licensed BSD and GPLv2. You may choose the license that fits
 best for your project.
 
@@ -54,7 +54,7 @@ interface RedBean_Driver
 	 *
 	 * @param string $sql      SQL to execute
 	 * @param array  $bindings list of values to bind to SQL snippet
-	 *
+	 * 
 	 * @return array
 	 */
 	public function GetRow( $sql, $bindings = array() );
@@ -174,9 +174,9 @@ class RedBean_Driver_PDO implements RedBean_Driver
 	 * @var bool
 	 */
 	protected $flagUseStringOnlyBinding = FALSE;
-
+	
 	/**
-	 * @var string
+	 * @var string 
 	 */
 	protected $mysqlEncoding = '';
 
@@ -277,7 +277,7 @@ class RedBean_Driver_PDO implements RedBean_Driver
 	 * seem to have added it with version 5.5 under a different label: utf8mb4.
 	 * We try to select the best possible charset based on your version data.
 	 */
-	protected function setEncoding()
+	protected function setEncoding() 
 	{
 		$driver = $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
 		$version = floatval( $this->pdo->getAttribute( PDO::ATTR_SERVER_VERSION ) );
@@ -292,10 +292,10 @@ class RedBean_Driver_PDO implements RedBean_Driver
 
 	/**
 	 * Returns the best possible encoding for MySQL based on version data.
-	 *
+	 * 
 	 * @return string
 	 */
-	public function getMysqlEncoding()
+	public function getMysqlEncoding() 
 	{
 		return $this->mysqlEncoding;
 	}
@@ -370,7 +370,7 @@ class RedBean_Driver_PDO implements RedBean_Driver
 					   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 				)
 			);
-
+			
 			$this->setEncoding();
 			$this->pdo->setAttribute( PDO::ATTR_STRINGIFY_FETCHES, TRUE );
 
@@ -622,7 +622,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 
 	/**
 	 * Whether to skip beautification of columns or not.
-	 *
+	 * 
 	 * @var boolean
 	 */
 	private $flagSkipBeau = FALSE;
@@ -852,9 +852,9 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	 * an array with the properties container as its contents.
 	 * This method is meant for PHP and allows you to access beans as if
 	 * they were arrays, i.e. using array notation:
-	 *
+	 * 
 	 * $bean[ $key ] = $value;
-	 *
+	 * 
 	 * Note that not all PHP functions work with the array interface.
 	 *
 	 * @return ArrayIterator
@@ -1212,7 +1212,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	 * Clears state.
 	 * Internal method. Clears the state of the query modifiers of the bean.
 	 * Query modifiers are: with(), withCondition(), alias() and fetchAs().
-	 *
+	 * 
 	 * @return void
 	 */
 	private function clear() {
@@ -1484,7 +1484,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	/**
 	 * Implementation of __toString Method
 	 * Routes call to Model. If the model implements a __toString() method this
-	 * method will be called and the result will be returned. In case of an
+	 * method will be called and the result will be returned. In case of an 
 	 * echo-statement this result will be printed. If the model does not
 	 * implement a __toString method, this method will return a JSON
 	 * representation of the current bean.
@@ -2385,7 +2385,7 @@ interface RedBean_QueryWriter
 	 * Define GLUE types for use with glueSQLCondition methods.
 	 * Determines how to prefix a snippet of SQL before appending it
 	 * to other SQL (or integrating it, mixing it otherwise).
-	 *
+	 * 
 	 * WHERE - glue as WHERE condition
 	 * AND   - glue as AND condition
 	 */
@@ -2396,28 +2396,28 @@ interface RedBean_QueryWriter
 	 * Glues an SQL snippet to the beginning of a WHERE clause.
 	 * This ensures users don't have to add WHERE to their query snippets.
 	 *
-	 * The snippet gets prefixed with WHERE or AND
+	 * The snippet gets prefixed with WHERE or AND 
 	 * if it starts with a condition.
-	 *
+	 * 
 	 * If the snippet does NOT start with a condition (or this function thinks so)
 	 * the snippet is returned as-is.
-	 *
+	 * 
 	 * The GLUE type determines the prefix:
-	 *
+	 * 
 	 * - NONE  prefixes with WHERE
-	 * - WHERE prefixes with WHERE and replaces AND if snippets starts with AND
+	 * - WHERE prefixes with WHERE and replaces AND if snippets starts with AND  
 	 * - AND   prefixes with AND
-	 *
+	 * 
 	 * This method will never replace WHERE with AND since a snippet should never
 	 * begin with WHERE in the first place. OR is not supported.
-	 *
+	 * 
 	 * Only a limited set of clauses will be recognized as non-conditions.
 	 * For instance beginning a snippet with complex statements like JOIN or UNION
 	 * will not work. This is too complex for use in a snippet.
 	 *
 	 * @param string  $sql   SQL Snippet
 	 * @param integer $glue  the GLUE type - how to glue (C_GLUE_WHERE or C_GLUE_AND)
-	 *
+	 * 
 	 * @return string
 	 */
 	public function glueSQLCondition( $sql, $glue = NULL );
@@ -4274,7 +4274,7 @@ class RedBean_QueryWriter_SQLiteT extends RedBean_QueryWriter_AQueryWriter imple
 	public function code( $typedescription, $includeSpecials = FALSE )
 	{
 		$r = ( ( isset( $this->sqltype_typeno[$typedescription] ) ) ? $this->sqltype_typeno[$typedescription] : 99 );
-
+		
 		return $r;
 	}
 
@@ -4382,7 +4382,7 @@ class RedBean_QueryWriter_SQLiteT extends RedBean_QueryWriter_AQueryWriter imple
 	public function wipe( $type )
 	{
 		$table = $this->esc( $type );
-
+		
 		$this->adapter->exec( "DELETE FROM $table " );
 	}
 
@@ -5888,6 +5888,7 @@ class RedBean_OODB extends RedBean_Observable
 			if ( !$this->isFrozen ) {
 				$this->check( $bean );
 			}
+
 			$this->signal( 'dispense', $bean );
 
 			$beans[] = $bean;
@@ -8512,18 +8513,18 @@ class RedBean_LabelMaker
 
 		return $labels;
 	}
-
+	
 	/**
 	 * Returns a label or an array of labels for use as ENUMs.
-	 *
+	 * 
 	 * @param string $enum ENUM specification for label
-	 *
+	 * 
 	 * @return array|RedBean_OODBBean
 	 */
 	public function enum( $enum )
 	{
 		$oodb = $this->toolbox->getRedBean();
-
+		
 		if ( strpos( $enum, ':' ) === FALSE ) {
 			$type  = $enum;
 			$value = FALSE;
@@ -8531,22 +8532,22 @@ class RedBean_LabelMaker
 			list( $type, $value ) = explode( ':', $enum );
 			$value                = preg_replace( '/\W+/', '_', strtoupper( trim( $value ) ) );
 		}
-
+		
 		$values = $oodb->find( $type );
-
+		
 		if ( $value === FALSE ) {
 			return $values;
 		}
-
+		
 		foreach( $values as $enumItem ) {
-				if ( $enumItem->name === $value ) return $enumItem;
+				if ( $enumItem->name === $value ) return $enumItem;	
 		}
-
+		
 		$newEnumItems = $this->dispenseLabels( $type, array( $value ) );
 		$newEnumItem  = reset( $newEnumItems );
-
+		
 		$oodb->store( $newEnumItem );
-
+		
 		return $newEnumItem;
 	}
 }
@@ -10905,7 +10906,7 @@ class RedBean_Plugin_BeanCanResty implements RedBean_Plugin
 		}
 
 		$answer = call_user_func_array( array( $this->bean, $this->method ), $this->payload['param'] );
-
+		
 		return $this->resp( $answer );
 	}
 
@@ -11629,18 +11630,18 @@ class RedBean_Plugin_Cache extends RedBean_OODB implements RedBean_Plugin
 class RedBean_Plugin_TimeLine extends RedBean_Plugin_QueryLogger implements RedBean_Plugin {
 	/**
 	 * Path to file to write SQL and comments to.
-	 *
-	 * @var string
+	 * 
+	 * @var string 
 	 */
 	protected $file;
 	/**
 	 * Constructor.
 	 * Requires a path to an existing and writable file.
-	 *
-	 * @param string $outputPath path to file to write schema changes to.
+	 * 
+	 * @param string $outputPath path to file to write schema changes to. 
 	 */
 	public function __construct($outputPath) {
-		if (!file_exists($outputPath) || !is_writable($outputPath))
+		if (!file_exists($outputPath) || !is_writable($outputPath)) 
 			throw new RedBean_Exception_Security('Cannot write to file: '.$outputPath);
 		$this->file = $outputPath;
 	}
@@ -11698,6 +11699,84 @@ class RedBean_Plugin_StdErrorLogger extends RedBean_Plugin_QueryLogger {
     if ($eventName == 'sql_exec') {
       error_log($adapter->getSQL());
     }
+  }
+}
+
+
+class RedBean_ReBean implements RedBean_Plugin
+{
+  /**
+   * Creates the revision support for the given Bean
+   *
+   * @param  RedBean_OODBBean $bean          The bean-type to be revision supported
+   */
+  public function createRevisionSupport(RedBean_OODBBean $bean)
+  {
+    $export = $bean->export();
+    $duplicate = R::dispense("revision" . $bean->getMeta('type'));
+    $duplicate->action = "";                                 // real enum needed
+    $duplicate->import($export);
+    $duplicate->lastedit = date('Y-m-d h:i:s');
+    $duplicate->setMeta('cast.action','string');
+    $duplicate->setMeta('cast.lastedit','datetime');
+    //$duplicate->setMeta('cast.lastedit','timestamp');      // how to cast to timestamp
+    //$duplicate->setDefault('lastedit', R::$f->now());      // aka NOW()
+    RedBean_Facade::store($duplicate);
+
+    $this->createTrigger($bean, $duplicate);
+  }
+
+  private function getRevisionColumns(RedBean_OODBBean $bean)
+  {
+    return implode(",",
+      array_filter(                                              // remove nulls
+        array_map(                                               // transform values instead foreach
+          function($val) {
+            return ($val == "id" || $val == null) ? null : $val;
+          },
+          array_keys($bean->getProperties())                     // use the array_key to get the colName
+        )
+      )
+    );
+  }
+
+  private function getOriginalColumns(RedBean_OODBBean $bean, $prefix)
+  {
+    $self = $this;
+    return implode(",",
+      array_filter(
+        array_map(
+          function($col) use ($prefix) {
+            if($col == "id")
+              return null;
+            return $prefix . $col;
+          },
+          array_keys($bean->getProperties())
+        )
+      )
+    );
+  }
+
+  private function createTrigger(RedBean_OODBBean $bean, RedBean_OODBBean $duplicate)
+  {
+ /*   var_dump("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
+    \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('insert', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
+    END;");*/
+
+    RedBean_Facade::$adapter->exec("DROP TRIGGER IF EXISTS `trg_" . $bean->getMeta('type') . "_AI`;");
+    RedBean_Facade::$adapter->exec("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
+    \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('insert', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
+    END;");
+
+    RedBean_Facade::$adapter->exec("DROP TRIGGER IF EXISTS `trg_" . $bean->getMeta('type') . "_AU`;");
+    RedBean_Facade::$adapter->exec("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AU` AFTER UPDATE ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
+    \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('update', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
+    END;");
+
+    RedBean_Facade::$adapter->exec("DROP TRIGGER IF EXISTS `trg_" . $bean->getMeta('type') . "_AD`;");
+    RedBean_Facade::$adapter->exec("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AD` AFTER DELETE ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
+    \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('delete', NOW(), " . $this->getOriginalColumns($bean, 'OLD.') . ");
+    END;");
   }
 }
 
@@ -12130,5 +12209,5 @@ class RedBean_DuplicationManager
 
 
 class R extends RedBean_Facade{
-
+  
 }
