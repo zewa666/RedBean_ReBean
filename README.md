@@ -17,6 +17,7 @@ it just for testing and NOT IN PRODUCTION so far.
 
 Usage:
 =======================
+
 - Download the latest version of [RedBean from Github](https://github.com/gabordemooij/redbean) or
   install via Composer.
 - Add the file ReBean.php to the RedBean/Plugin folder
@@ -30,8 +31,14 @@ Usage:
 - Create your first bean type
 - Store it in the DB (R::store($YOURBEAN))
 - Call the revision method like this
+
 ```php
    $rebeanPlugin->createRevisionSupport($YOURBEAN);
 ```
-- Happy modifications of your previous Bean. You should be able to see all changes
+- Happy modifying of your previous Bean. You should be able to see all changes
   in the created revisiontable
+
+Example:
+=======================
+
+Take a look at the included example.php. It uses an rebuild RB.php which includes the Plugin already
