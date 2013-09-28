@@ -7,7 +7,8 @@ will be generating automatically revision tables for given Beans
 This is achieved by creating a table named after your beantype plus the "revision" prefix.
 The table contains all the columns from your bean. Additionally it has a column "action" specifying
 if this revision was made by an [INSERT,UPDATE,DELETE] statement.
-Finally there is a "lastedit" column indicating when the change happend.
+Also inlcuded is the column "original_id" which represents the ID of the bean, that's been
+revisioned. Finally there is a "lastedit" column indicating when the change happend.
 
 All the functionallity is achieved by using AFTER Triggers
 
