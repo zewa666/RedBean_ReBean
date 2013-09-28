@@ -19,6 +19,7 @@ class RedBean_ReBean implements RedBean_Plugin
     $export = $bean->export();
     $duplicate = R::dispense("revision" . $bean->getMeta('type'));
     $duplicate->action = "";                                 // real enum needed
+    $duplicate->original_id = $bean->id;
     $duplicate->import($export);
     $duplicate->lastedit = date('Y-m-d h:i:s');
     $duplicate->setMeta('cast.action','string');
@@ -36,7 +37,14 @@ class RedBean_ReBean implements RedBean_Plugin
       array_filter(                                              // remove nulls
         array_map(                                               // transform values instead foreach
           function($val) {
-            return ($val == "id" || $val == null) ? null : $val;
+            if($val == "id")
+            {
+              return "original_id";
+            }
+            else
+            {
+              return (empty($val) || $val == null) ? null : $val;
+            }
           },
           array_keys($bean->getProperties())                     // use the array_key to get the colName
         )
@@ -51,8 +59,6 @@ class RedBean_ReBean implements RedBean_Plugin
       array_filter(
         array_map(
           function($col) use ($prefix) {
-            if($col == "id")
-              return null;
             return $prefix . $col;
           },
           array_keys($bean->getProperties())
@@ -63,7 +69,7 @@ class RedBean_ReBean implements RedBean_Plugin
 
   private function createTrigger(RedBean_OODBBean $bean, RedBean_OODBBean $duplicate)
   {
- /*   var_dump("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
+    /*var_dump("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
     \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('insert', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
     END;");*/
 

@@ -21,7 +21,7 @@ $user->prename = "Unknown";
 $user->surname = "User";
 $user->age = 12;
 
-// store it
+// store the bean
 R::store($user);
 
 // now ask the plugin to create revision support for your
