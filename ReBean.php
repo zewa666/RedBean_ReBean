@@ -16,6 +16,12 @@ class RedBean_ReBean implements RedBean_Plugin
    */
   public function createRevisionSupport(RedBean_OODBBean $bean)
   {
+    // check if the bean already has revision support
+    if(R::getWriter()->tableExists("revision" . $bean->getMeta('type')))
+    {
+      throw new ReBean_Exception("The given Bean has already revision support");
+    }
+
     $export = $bean->export();
     $duplicate = R::dispense("revision" . $bean->getMeta('type'));
     $duplicate->action = "";                                 // real enum needed
@@ -24,8 +30,6 @@ class RedBean_ReBean implements RedBean_Plugin
     $duplicate->lastedit = date('Y-m-d h:i:s');
     $duplicate->setMeta('cast.action','string');
     $duplicate->setMeta('cast.lastedit','datetime');
-    //$duplicate->setMeta('cast.lastedit','timestamp');      // how to cast to timestamp
-    //$duplicate->setDefault('lastedit', R::$f->now());      // aka NOW()
     RedBean_Facade::store($duplicate);
 
     $this->createTrigger($bean, $duplicate);
@@ -69,10 +73,6 @@ class RedBean_ReBean implements RedBean_Plugin
 
   private function createTrigger(RedBean_OODBBean $bean, RedBean_OODBBean $duplicate)
   {
-    /*var_dump("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
-    \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('insert', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
-    END;");*/
-
     RedBean_Facade::$adapter->exec("DROP TRIGGER IF EXISTS `trg_" . $bean->getMeta('type') . "_AI`;");
     RedBean_Facade::$adapter->exec("CREATE TRIGGER `trg_" . $bean->getMeta('type') . "_AI` AFTER INSERT ON `" . $bean->getMeta('type') . "` FOR EACH ROW BEGIN
     \tINSERT INTO " . $duplicate->getMeta('type') . "(`action`, `lastedit`, " . $this->getRevisionColumns($bean) . ") VALUES ('insert', NOW(), " . $this->getOriginalColumns($bean, 'NEW.') . ");
@@ -89,3 +89,16 @@ class RedBean_ReBean implements RedBean_Plugin
     END;");
   }
 }
+
+class ReBean_Exception extends Exception
+{
+  public function __construct($message, $code = 0, Exception $previous = null) {
+    parent::__construct($message, $code, $previous);
+  }
+}
+
+// add plugin to RedBean facade
+R::ext( 'createRevisionSupport', function(RedBean_OODBBean $bean) {
+    $rebeanPlugin = new RedBean_ReBean();
+    $rebeanPlugin->createRevisionSupport($bean);
+});

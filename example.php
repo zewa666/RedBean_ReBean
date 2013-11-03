@@ -1,13 +1,11 @@
 <?php
 // require the one-file-build
 require 'rb.php';
+require 'ReBean.php';
 
 // currently only working for MYSQL so setup your connection here
 R::setup('mysql:host=localhost;dbname=redbeandemo',
          'root','');
-
-// get instance of the revision plugin
-$rebeanPlugin = new RedBean_ReBean();
 
 /*
  * just for demo purpose to see that each time really everything gets build
@@ -25,7 +23,7 @@ $user->age = 12;
 R::store($user);
 
 // now ask the plugin to create revision support for your
-$rebeanPlugin->createRevisionSupport($user);
+R::createRevisionSupport($user);
 
 /*
  * some CRUD tests to verify that all changes are tracked in the revision table

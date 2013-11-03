@@ -16,6 +16,15 @@ Current status:
 The plugin so far works for Mysql, although not properly tested. Please use
 it just for testing and NOT IN PRODUCTION so far.
 
+Update:
+=======================
+
+- Now uses the R::ext plugin helper so you can access Revisioning without any previous
+  instance creation. Just use R::createRevisionSupport($YOURBEAN);
+- Added PHPUnit Tests
+- Throw Exception if Bean is already under revision support
+
+
 Usage:
 =======================
 
@@ -23,18 +32,12 @@ Usage:
   install via Composer.
 - Add the file ReBean.php to the RedBean/Plugin folder
 - Either manually require the file or see the [RedBean instructions](http://www.redbeanphp.com/replica) for building your on RB.php file
-- In your main file where you setup RedBean add following code to get an instance of the revision plugin
-
-```php
-   $rebeanPlugin = new RedBean_ReBean();
-```
-
 - Create your first bean type
 - Store it in the DB (R::store($YOURBEAN))
 - Call the revision method like this
 
 ```php
-   $rebeanPlugin->createRevisionSupport($YOURBEAN);
+   R::createRevisionSupport($YOURBEAN);
 ```
 - Happy modifying of your previous Bean. You should be able to see all changes
   in the created revisiontable
@@ -42,4 +45,4 @@ Usage:
 Example:
 =======================
 
-Take a look at the included example.php. It uses an rebuild RB.php which includes the Plugin already
+Take a look at the included example.php.
